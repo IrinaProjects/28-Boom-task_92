@@ -32,16 +32,29 @@ export default class Application extends EventEmitter {
       card.render();
 
       document.querySelector(".main").appendChild(card.container);
-
-
-      card.addListener(Card.events.ADD_TO_CART, () => {
-        const notif = new Notification();
-        notif.render({ ...pizza });
-
-        document.querySelector(".main").appendChild(notif.container);
-      });
-
     });
+
+    var elements = document.getElementsByClassName("card");
+
+    for (var i = 0; i < elements.length; i++) {
+      const notification = new Notification(elements[i]);
+      const type = pizzas[i].type;
+      const price = pizzas[i].price;
+      console.log(pizzas[i]);
+      notification.render({ type, price });
+      elements[i].addEventListener("click", function () {
+        document
+          .querySelector(".notifications")
+          .appendChild(notification.container);
+      });
+      notification.container
+        .querySelector(".delete")
+        .addEventListener("click", function () {
+          document
+            .querySelector(".notifications")
+            .removeChild(notification.container);
+        });
+    }
 
     this.emit(Application.events.READY);
   }
