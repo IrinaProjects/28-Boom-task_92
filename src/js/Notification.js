@@ -1,6 +1,5 @@
+import { formatCurrency } from "./utils";
 import classNames from "classnames";
-import { formatCurrency } from "./utils.js";
-
 export default class Notification {
   static get types() {
     return {
@@ -13,28 +12,28 @@ export default class Notification {
   constructor() {
     this.container = document.createElement("div");
     this.container.classList.add("notification-container");
+    if (this._type === Notification.types.HAWAIIAN) {
+      this.container.classList.add("is-danger");
+    }
   }
 
-  render({ type, price }) {
+  empty(){
+    this.container.remove();
+  }
+
+  render({type, price}) {
+    const isHawaiian = type === Notification.types.HAWAIIAN;
+    // questionable requirement ${isHawaiian ? " is-danger" : ""}
+    const cNames = classNames(`notification type-${type}`, { 'is-danger': isHawaiian });
     const template = `
-<div class="notification ${type} type-${type} ${classNames({
-      "is-danger": type === Notification.types.HAWAIIAN,
-    })}"">
-  <button class="delete"></button>
-  🍕 <span class="type">${type}</span> (<span class="price">${formatCurrency(
-      price
-    )}</span>) has been added to your order.
-</div>
+      <div class="${cNames}">
+        <button class="delete"></button>
+        🍕 <span class="type">${type}</span> (<span class="price">${formatCurrency(price)}</span>) has been added to your order.
+      </div>
     `;
 
     this.container.innerHTML = template;
-  }
-
-  close() {
-    console.log("t");
-  }
-
-  empty() {
-    this.container.innerHTML = "";
+    const deleteButton = this.container.querySelector(".delete");
+    deleteButton.onclick = () => this.empty();
   }
 }
